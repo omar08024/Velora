@@ -11,6 +11,7 @@ import Cart from "./pages/Cart";
 import ProductDetails from "./pages/ProductDetails";
 import { useDispatch, useSelector } from "react-redux";
 import ToastMessage from "./components/ToastMessage";
+import Contact from "./pages/Contact";
 
 const Container = styled.div`
   width: 100%;
@@ -39,6 +40,7 @@ function App() {
             <Route path="/favorite" exact element={<Favourite />} />
             <Route path="/cart" exact element={<Cart />} />
             <Route path="/shop/:id" exact element={<ProductDetails />} />
+            <Route path="/contact" element={<Contact />} />
           </Routes>
           {openAuth && (
             <Authentication openAuth={openAuth} setOpenAuth={setOpenAuth} />

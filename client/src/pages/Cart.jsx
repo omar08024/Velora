@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
-import { addToCart, deleteFromCart, getCart, placeOrder } from "../api";
+// حذفنا imports الغير موجودة
 import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import { useDispatch } from "react-redux";
@@ -40,7 +40,6 @@ const Title = styled.div`
   justify-content: ${({ center }) => (center ? "center" : "space-between")};
   align-items: center;
 `;
-
 const Wrapper = styled.div`
   display: flex;
   gap: 32px;
@@ -81,7 +80,6 @@ const Counter = styled.div`
   border-radius: 8px;
   padding: 4px 12px;
 `;
-
 const Product = styled.div`
   display: flex;
   gap: 16px;
@@ -107,7 +105,6 @@ const ProSize = styled.div`
   font-size: 14px;
   font-weight: 500;
 `;
-
 const Right = styled.div`
   flex: 1;
   display: flex;
@@ -147,52 +144,36 @@ const Cart = () => {
     completeAddress: "",
   });
 
+  // Mock للـ getCart
   const getProducts = async () => {
     setLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await getCart(token).then((res) => {
-      setProducts(res.data);
+    setTimeout(() => {
+      setProducts([
+        {
+          product: {
+            _id: "1",
+            title: "Sample Product",
+            name: "Sample Name",
+            img: "https://via.placeholder.com/80",
+            price: { org: 100, mrp: 120, off: 20 },
+          },
+          quantity: 1,
+        },
+      ]);
       setLoading(false);
-    });
+    }, 500);
   };
 
-  const addCart = async (id) => {
-    const token = localStorage.getItem("krist-app-token");
-    await addToCart(token, { productId: id, quantity: 1 })
-      .then((res) => {
-        setReload(!reload);
-      })
-      .catch((err) => {
-        setReload(!reload);
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
+  // Mock للـ addToCart
+  const addCart = (id) => {
+    alert("Added to cart (mock)");
+    setReload(!reload);
   };
 
-  const removeCart = async (id, quantity, type) => {
-    const token = localStorage.getItem("krist-app-token");
-    let qnt = quantity > 0 ? 1 : null;
-    if (type === "full") qnt = null;
-    await deleteFromCart(token, {
-      productId: id,
-      quantity: qnt,
-    })
-      .then((res) => {
-        setReload(!reload);
-      })
-      .catch((err) => {
-        setReload(!reload);
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
+  // Mock للـ deleteFromCart
+  const removeCart = (id, quantity, type) => {
+    alert("Removed from cart (mock)");
+    setReload(!reload);
   };
 
   const calculateSubtotal = () => {
@@ -207,61 +188,32 @@ const Cart = () => {
   }, [reload]);
 
   const convertAddressToString = (addressObj) => {
-    // Convert the address object to a string representation
     return `${addressObj.firstName} ${addressObj.lastName}, ${addressObj.completeAddress}, ${addressObj.phoneNumber}, ${addressObj.emailAddress}`;
   };
 
-  const PlaceOrder = async () => {
+  // Mock للـ placeOrder
+  const PlaceOrder = () => {
     setButtonLoad(true);
-    try {
-      const isDeliveryDetailsFilled =
-        deliveryDetails.firstName &&
-        deliveryDetails.lastName &&
-        deliveryDetails.completeAddress &&
-        deliveryDetails.phoneNumber &&
-        deliveryDetails.emailAddress;
-
-      if (!isDeliveryDetailsFilled) {
-        // Show an error message or handle the situation where delivery details are incomplete
-        dispatch(
-          openSnackbar({
-            message: "Please fill in all required delivery details.",
-            severity: "error",
-          })
-        );
-        return;
-      }
-      const token = localStorage.getItem("krist-app-token");
-      const totalAmount = calculateSubtotal().toFixed(2);
-      const orderDetails = {
-        products,
-        address: convertAddressToString(deliveryDetails),
-        totalAmount,
-      };
-
-      await placeOrder(token, orderDetails);
-
-      // Show success message or navigate to a success page
+    if (
+      !deliveryDetails.firstName ||
+      !deliveryDetails.lastName ||
+      !deliveryDetails.completeAddress ||
+      !deliveryDetails.phoneNumber ||
+      !deliveryDetails.emailAddress
+    ) {
       dispatch(
         openSnackbar({
-          message: "Order placed successfully",
-          severity: "success",
-        })
-      );
-      setButtonLoad(false);
-      // Clear the cart and update the UI
-      setReload(!reload);
-    } catch (error) {
-      // Handle errors, show error message, etc.
-      dispatch(
-        openSnackbar({
-          message: "Failed to place order. Please try again.",
+          message: "Please fill in all required delivery details.",
           severity: "error",
         })
       );
       setButtonLoad(false);
+      return;
     }
+    alert("Order placed (mock)");
+    setButtonLoad(false);
   };
+
   return (
     <Container>
       {loading ? (
@@ -284,7 +236,7 @@ const Cart = () => {
                   <TableItem></TableItem>
                 </Table>
                 {products?.map((item) => (
-                  <Table>
+                  <Table key={item.product._id}>
                     <TableItem flex>
                       <Product>
                         <Img src={item?.product?.img} />
@@ -299,10 +251,7 @@ const Cart = () => {
                     <TableItem>
                       <Counter>
                         <div
-                          style={{
-                            cursor: "pointer",
-                            flex: 1,
-                          }}
+                          style={{ cursor: "pointer", flex: 1 }}
                           onClick={() =>
                             removeCart(item?.product?._id, item?.quantity - 1)
                           }
@@ -311,10 +260,7 @@ const Cart = () => {
                         </div>
                         {item?.quantity}
                         <div
-                          style={{
-                            cursor: "pointer",
-                            flex: 1,
-                          }}
+                          style={{ cursor: "pointer", flex: 1 }}
                           onClick={() => addCart(item?.product?._id)}
                         >
                           +
@@ -322,7 +268,6 @@ const Cart = () => {
                       </Counter>
                     </TableItem>
                     <TableItem>
-                      {" "}
                       ${(item.quantity * item?.product?.price?.org).toFixed(2)}
                     </TableItem>
                     <TableItem>
@@ -347,12 +292,7 @@ const Cart = () => {
                 <Delivery>
                   Delivery Details:
                   <div>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "6px",
-                      }}
-                    >
+                    <div style={{ display: "flex", gap: "6px" }}>
                       <TextInput
                         small
                         placeholder="First Name"
@@ -417,12 +357,7 @@ const Cart = () => {
                   Payment Details:
                   <div>
                     <TextInput small placeholder="Card Number" />
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "6px",
-                      }}
-                    >
+                    <div style={{ display: "flex", gap: "6px" }}>
                       <TextInput small placeholder="Expiry Date" />
                       <TextInput small placeholder="CVV" />
                     </div>
@@ -430,7 +365,7 @@ const Cart = () => {
                   </div>
                 </Delivery>
                 <Button
-                  text="Pace Order"
+                  text="Place Order"
                   small
                   isLoading={buttonLoad}
                   isDisabled={buttonLoad}

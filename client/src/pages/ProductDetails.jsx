@@ -3,16 +3,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Button from "../components/Button";
 import { FavoriteBorder, FavoriteRounded } from "@mui/icons-material";
-import { useNavigate, useParams } from "react-router-dom";
-import { openSnackbar } from "../redux/reducers/snackbarSlice";
-import { useDispatch } from "react-redux";
-import {
-  addToCart,
-  addToFavourite,
-  deleteFromFavourite,
-  getFavourite,
-  getProductDetails,
-} from "../api";
 
 const Container = styled.div`
   display: flex;
@@ -47,7 +37,6 @@ const Image = styled.img`
     height: 400px;
   }
 `;
-
 const Details = styled.div`
   display: flex;
   gap: 18px;
@@ -55,21 +44,17 @@ const Details = styled.div`
   padding: 4px 10px;
   flex: 1;
 `;
-
 const Title = styled.div`
   font-size: 28px;
   font-weight: 600;
-  color: ${({ theme }) => theme.text_primary};
 `;
 const Desc = styled.div`
   font-size: 16px;
   font-weight: 400;
-  color: ${({ theme }) => theme.text_primary};
 `;
 const Name = styled.div`
   font-size: 18px;
   font-weight: 400;
-  color: ${({ theme }) => theme.text_primary};
 `;
 const Price = styled.div`
   display: flex;
@@ -77,21 +62,17 @@ const Price = styled.div`
   gap: 8px;
   font-size: 22px;
   font-weight: 500;
-  color: ${({ theme }) => theme.text_primary};
 `;
 const Span = styled.div`
   font-size: 16px;
   font-weight: 500;
-  color: ${({ theme }) => theme.text_secondary + 60};
   text-decoration: line-through;
-  text-decoration-color: ${({ theme }) => theme.text_secondary + 50};
 `;
 const Percent = styled.div`
   font-size: 16px;
   font-weight: 500;
   color: green;
 `;
-
 const Sizes = styled.div`
   font-size: 18px;
   font-weight: 500;
@@ -104,7 +85,7 @@ const Items = styled.div`
   gap: 12px;
 `;
 const Item = styled.div`
-  border: 1px solid ${({ theme }) => theme.primary};
+  border: 1px solid blue;
   font-size: 14px;
   width: 42px;
   height: 42px;
@@ -112,11 +93,11 @@ const Item = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  ${({ selected, theme }) =>
+  ${({ selected }) =>
     selected &&
     `
-  background: ${theme.primary};
-  color: white;
+    background: blue;
+    color: white;
   `}
 `;
 const ButtonWrapper = styled.div`
@@ -124,10 +105,8 @@ const ButtonWrapper = styled.div`
   gap: 16px;
   padding: 32px 0px;
 `;
+
 const ProductDetails = () => {
-  const { id } = useParams();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState();
   const [selected, setSelected] = useState();
@@ -135,93 +114,30 @@ const ProductDetails = () => {
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [cartLoading, setCartLoading] = useState(false);
 
+  // Mock getProductDetails
   const getProduct = async () => {
     setLoading(true);
-    await getProductDetails(id).then((res) => {
-      setProduct(res.data);
+    setTimeout(() => {
+      setProduct({
+        _id: "1",
+        title: "Sample Product",
+        name: "Product Name",
+        img: "https://via.placeholder.com/300",
+        price: { org: 120, mrp: 150, off: 20 },
+        desc: "This is a sample product description.",
+        sizes: ["S", "M", "L", "XL"],
+      });
       setLoading(false);
-    });
+    }, 500);
   };
 
-  const addFavorite = async () => {
-    setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await addToFavourite(token, { productID: product?._id })
-      .then((res) => {
-        setFavorite(true);
-        setFavoriteLoading(false);
-      })
-      .catch((err) => {
-        setFavoriteLoading(false);
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
-  };
-  const removeFavorite = async () => {
-    setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await deleteFromFavourite(token, { productID: product?._id })
-      .then((res) => {
-        setFavorite(false);
-        setFavoriteLoading(false);
-      })
-      .catch((err) => {
-        setFavoriteLoading(false);
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
-  };
-  const addCart = async () => {
-    setCartLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await addToCart(token, { productId: product?._id, quantity: 1 })
-      .then((res) => {
-        setCartLoading(false);
-        navigate("/cart");
-      })
-      .catch((err) => {
-        setCartLoading(false);
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
-  };
-  const checkFavourite = async () => {
-    setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await getFavourite(token, { productId: product?._id })
-      .then((res) => {
-        const isFavorite = res.data?.some(
-          (favorite) => favorite._id === product?._id
-        );
-        setFavorite(isFavorite);
-        setFavoriteLoading(false);
-      })
-      .catch((err) => {
-        setFavoriteLoading(false);
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
-  };
+  // Mock functions for add/remove favorite & add to cart
+  const addFavorite = async () => setFavorite(true);
+  const removeFavorite = async () => setFavorite(false);
+  const addCart = async () => alert("Added to cart!");
 
   useEffect(() => {
     getProduct();
-    checkFavourite();
   }, []);
 
   return (
@@ -241,13 +157,14 @@ const ProductDetails = () => {
             <Rating value={3.5} />
             <Price>
               ${product?.price?.org} <Span>${product?.price?.mrp}</Span>{" "}
-              <Percent> (${product?.price?.off}% Off) </Percent>
+              <Percent> ({product?.price?.off}% Off) </Percent>
             </Price>
             <Desc>{product?.desc}</Desc>
             <Sizes>
               <Items>
                 {product?.sizes.map((size) => (
                   <Item
+                    key={size}
                     selected={selected === size}
                     onClick={() => setSelected(size)}
                   >
@@ -276,7 +193,9 @@ const ProductDetails = () => {
                 full
                 outlined
                 isLoading={favoriteLoading}
-                onClick={() => (favorite ? removeFavorite() : addFavorite())}
+                onClick={() =>
+                  favorite ? removeFavorite() : addFavorite()
+                }
               />
             </ButtonWrapper>
           </Details>

@@ -2,17 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress, Rating } from "@mui/material";
 import styled from "styled-components";
-import {
-  AddShoppingCartOutlined,
-  FavoriteBorder,
-  FavoriteRounded,
-} from "@mui/icons-material";
-import {
-  addToCart,
-  addToFavourite,
-  deleteFromFavourite,
-  getFavourite,
-} from "../../api";
+import { AddShoppingCartOutlined, FavoriteBorder, FavoriteRounded } from "@mui/icons-material";
+// حذفنا imports اللي مش موجودة
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "../../redux/reducers/snackbarSlice";
 
@@ -93,8 +84,6 @@ const Rate = styled.div`
 `;
 
 const Details = styled.div`
-import { useDispatch } from "react-redux";
-import { openSnackbar } from "../../redux/reducers/snackbarSlice";
   display: flex;
   gap: 6px;
   flex-direction: column;
@@ -142,104 +131,59 @@ const ProductCard = ({ product }) => {
 
   const addFavorite = async () => {
     setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await addToFavourite(token, { productID: product?._id })
-      .then((res) => {
-        setFavorite(true);
-        setFavoriteLoading(false);
-      })
-      .catch((err) => {
-        setFavoriteLoading(false);
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
+    // مؤقتاً بدل API
+    setTimeout(() => {
+      setFavorite(true);
+      setFavoriteLoading(false);
+      dispatch(openSnackbar({ message: "Added to favorites (mock)", severity: "success" }));
+    }, 500);
   };
+
   const removeFavorite = async () => {
     setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await deleteFromFavourite(token, { productID: product?._id })
-      .then((res) => {
-        setFavorite(false);
-        setFavoriteLoading(false);
-      })
-      .catch((err) => {
-        setFavoriteLoading(false);
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
+    // مؤقتاً بدل API
+    setTimeout(() => {
+      setFavorite(false);
+      setFavoriteLoading(false);
+      dispatch(openSnackbar({ message: "Removed from favorites (mock)", severity: "success" }));
+    }, 500);
   };
+
   const addCart = async () => {
-    const token = localStorage.getItem("krist-app-token");
-    await addToCart(token, { productId: product?._id, quantity: 1 })
-      .then((res) => {
-        navigate("/cart");
-      })
-      .catch((err) => {
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
+    // مؤقتاً بدل API
+    alert("Added to cart (mock)");
+    navigate("/cart");
   };
+
   const checkFavourite = async () => {
+    // مؤقتاً بدل API
     setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await getFavourite(token, { productId: product?._id })
-      .then((res) => {
-        const isFavorite = res.data?.some(
-          (favorite) => favorite._id === product?._id
-        );
-        setFavorite(isFavorite);
-        setFavoriteLoading(false);
-      })
-      .catch((err) => {
-        setFavoriteLoading(false);
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
+    setTimeout(() => {
+      setFavorite(false);
+      setFavoriteLoading(false);
+    }, 500);
   };
 
   useEffect(() => {
     checkFavourite();
   }, []);
+
   return (
     <Card>
       <Top>
         <Image src={product?.img} />
         <Menu>
-          <MenuItem
-            onClick={() => (favorite ? removeFavorite() : addFavorite())}
-          >
+          <MenuItem onClick={() => (favorite ? removeFavorite() : addFavorite())}>
             {favoriteLoading ? (
               <CircularProgress sx={{ fontSize: "20px" }} />
+            ) : favorite ? (
+              <FavoriteRounded sx={{ fontSize: "20px", color: "red" }} />
             ) : (
-              <>
-                {favorite ? (
-                  <FavoriteRounded sx={{ fontSize: "20px", color: "red" }} />
-                ) : (
-                  <FavoriteBorder sx={{ fontSize: "20px" }} />
-                )}
-              </>
+              <FavoriteBorder sx={{ fontSize: "20px" }} />
             )}
-          </MenuItem>{" "}
+          </MenuItem>
           <MenuItem onClick={() => addCart(product?.id)}>
-            <AddShoppingCartOutlined
-              sx={{ color: "inherit", fontSize: "20px" }}
-            />
+            <AddShoppingCartOutlined sx={{ color: "inherit", fontSize: "20px" }} />
           </MenuItem>
         </Menu>
         <Rate>

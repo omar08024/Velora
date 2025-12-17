@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import TextInput from "./TextInput";
 import Button from "./Button";
-import { UserSignUp } from "../api";
+// import { UserSignUp } from "../api"; // أزلناه
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../redux/reducers/userSlice";
 import { openSnackbar } from "../redux/reducers/snackbarSlice";
@@ -45,44 +45,9 @@ const SignUp = ({ setOpenAuth }) => {
     setLoading(true);
     setButtonDisabled(true);
     if (validateInputs()) {
-      await UserSignUp({ name, email, password })
-        .then((res) => {
-          dispatch(loginSuccess(res.data));
-          dispatch(
-            openSnackbar({
-              message: "Sign Up Successful",
-              severity: "success",
-            })
-          );
-          setLoading(false);
-          setButtonDisabled(false);
-          setOpenAuth(false);
-        })
-        .catch((err) => {
-          setButtonDisabled(false);
-          if (err.response) {
-            setLoading(false);
-            setButtonDisabled(false);
-            alert(err.response.data.message);
-            dispatch(
-              openSnackbar({
-                message: err.response.data.message,
-                severity: "error",
-              })
-            );
-          } else {
-            setLoading(false);
-            setButtonDisabled(false);
-            dispatch(
-              openSnackbar({
-                message: err.message,
-                severity: "error",
-              })
-            );
-          }
-        });
+      // مؤقتاً بدل UserSignUp
+      alert("UserSignUp API not implemented locally");
     }
-
     setButtonDisabled(false);
     setLoading(false);
   };

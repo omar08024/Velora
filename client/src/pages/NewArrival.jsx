@@ -1,8 +1,14 @@
 import React from 'react'
+import styled from 'styled-components'
+
+
+
 
 const NewArrival = () => {
   return (
-    <div>NewArrival</div>
+    <div>
+      New Arrivals Page
+    </div>
   )
 }
 

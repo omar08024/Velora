@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ProductCard from "../components/cards/ProductCard";
-import { getFavourite } from "../api";
+// حذفنا import الغير موجود
 import { CircularProgress } from "@mui/material";
 
 const Container = styled.div`
@@ -25,7 +25,6 @@ const Section = styled.div`
   flex-direction: column;
   gap: 28px;
 `;
-
 const Title = styled.div`
   font-size: 28px;
   font-weight: 500;
@@ -33,7 +32,6 @@ const Title = styled.div`
   justify-content: ${({ center }) => (center ? "center" : "space-between")};
   align-items: center;
 `;
-
 const CardWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -47,21 +45,35 @@ const CardWrapper = styled.div`
 const Favourite = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
-  const [reload, setReload] = useState(false);
 
+  // Mock للـ getFavourite
   const getProducts = async () => {
     setLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await getFavourite(token).then((res) => {
-      setProducts(res.data);
+    setTimeout(() => {
+      setProducts([
+        {
+          _id: "1",
+          title: "Sample Favourite Product",
+          name: "Favourite Name",
+          img: "https://via.placeholder.com/150",
+          price: { org: 100, mrp: 120, off: 20 },
+        },
+        {
+          _id: "2",
+          title: "Another Favourite",
+          name: "Another Name",
+          img: "https://via.placeholder.com/150",
+          price: { org: 150, mrp: 200, off: 25 },
+        },
+      ]);
       setLoading(false);
-      setReload(!reload);
-    });
+    }, 500);
   };
 
   useEffect(() => {
     getProducts();
   }, []);
+
   return (
     <Container>
       <Section>
@@ -69,18 +81,12 @@ const Favourite = () => {
         <CardWrapper>
           {loading ? (
             <CircularProgress />
+          ) : products.length === 0 ? (
+            <>No Products</>
           ) : (
-            <>
-              {products.length === 0 ? (
-                <>No Products</>
-              ) : (
-                <CardWrapper>
-                  {products.map((product) => (
-                    <ProductCard product={product} />
-                  ))}
-                </CardWrapper>
-              )}
-            </>
+            products.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))
           )}
         </CardWrapper>
       </Section>

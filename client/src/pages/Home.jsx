@@ -5,6 +5,7 @@ import { category } from "../utils/data";
 import ProductCategoryCard from "../components/cards/ProductCategoryCard";
 import ProductCard from "../components/cards/ProductCard";
 import { getAllProducts } from "../api";
+import { CircularProgress } from "@mui/material";
 
 const Container = styled.div`
   padding: 20px 30px;
@@ -20,6 +21,7 @@ const Container = styled.div`
   }
   background: ${({ theme }) => theme.bg};
 `;
+
 const Section = styled.div`
   max-width: 1400px;
   padding: 32px 16px;
@@ -27,6 +29,7 @@ const Section = styled.div`
   flex-direction: column;
   gap: 28px;
 `;
+
 const Img = styled.img`
   width: 90%;
   height: 700px;
@@ -58,39 +61,49 @@ const Home = () => {
 
   const getProducts = async () => {
     setLoading(true);
-    await getAllProducts().then((res) => {
+    try {
+      const res = await getAllProducts();
       setProducts(res.data);
-      setLoading(false);
-    });
+    } catch (err) {
+      console.error("Failed to fetch products:", err);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
     getProducts();
   }, []);
+
   return (
     <Container>
-      <Section
-        style={{
-          alignItems: "center",
-        }}
-      >
+      <Section style={{ alignItems: "center" }}>
         <Img src={HeaderImage} />
       </Section>
+
       <Section>
         <Title>Shop by Categories</Title>
         <CardWrapper>
-          {category.map((category) => (
-            <ProductCategoryCard category={category} />
+          {category.map((cat) => (
+            <ProductCategoryCard key={cat.id} category={cat} />
           ))}
         </CardWrapper>
       </Section>
+
       <Section>
         <Title center>Our Bestseller</Title>
-        <CardWrapper>
-          {products.map((product) => (
-            <ProductCard product={product} />
-          ))}
-        </CardWrapper>
+        {loading ? (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <CircularProgress />
+          </div>
+        ) : products.length === 0 ? (
+          <div>No Products</div>
+        ) : (
+          <CardWrapper>
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </CardWrapper>
+        )}
       </Section>
     </Container>
   );
